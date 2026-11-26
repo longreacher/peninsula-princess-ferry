@@ -34,7 +34,8 @@ On iOS, keep the app visible while driving; continuous background GPS is restric
 
 - Includes only **Summerville → Millidgeville** and **Millidgeville → Summerville**.
 - Uses the supplied timetable dated **8 July 2021**.
-- Includes 30 weekday, 29 Saturday/statutory-holiday, and 26 Sunday departures in each direction.
+- Keeps every regular Summerville-Millidgeville departure and reassigns every former Kennebecasis Island run to the main crossing at the same time for fall operation.
+- Includes 37 weekday, 36 Saturday/statutory-holiday, and 32 Sunday departures in each direction after the fall additions.
 - Automatically picks the nearer departure landing, with a manual direction override.
 - Uses New Brunswick time (`America/Moncton`) even if the device is set to another zone.
 - Detects core New Brunswick public holidays and uses the Saturday/holiday schedule; a manual schedule override is available.

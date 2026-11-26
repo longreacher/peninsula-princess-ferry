@@ -13,6 +13,6 @@ assert.match(app, /window\.addEventListener\('load', attemptAutomaticGps, \{ onc
 assert.match(app, /elements\.startBtn\.addEventListener\('click',[\s\S]*?requestPosition\(\)/, 'Visible GPS button must manually request a position');
 assert.match(app, /bufferMinutes: saved\.bufferMinutes \?\? 1/, 'Default loading buffer must remain one minute');
 assert.match(html, /id="bufferInput"[^>]*value="1"/, 'Settings control must retain the one-minute default');
-assert.match(serviceWorker, /ferry-timer-v1\.0\.3/, 'Cache version must match this release');
+assert.match(serviceWorker, /ferry-timer-v1\.0\.4/, 'Cache version must match this release');
 
 console.log('Automatic GPS startup, persistent fallback control, and one-minute buffer tests passed.');

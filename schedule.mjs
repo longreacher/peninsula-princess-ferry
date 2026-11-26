@@ -1,23 +1,38 @@
 export const ZONE = 'America/Moncton';
 
-const S2M = {
+const REGULAR_S2M = {
   weekday: [360,390,420,450,480,510,540,570,630,660,690,750,780,810,840,870,930,960,990,1020,1050,1110,1140,1170,1230,1260,1290,1350,1380,1410],
   saturday: [360,390,420,450,480,540,570,630,660,690,750,780,810,840,870,930,960,990,1020,1050,1110,1140,1170,1230,1260,1290,1350,1380,1410],
   sunday: [480,510,540,570,630,660,690,750,780,810,840,870,930,960,990,1020,1050,1110,1140,1170,1230,1260,1290,1350,1380,1410]
 };
 
 const plus15 = values => values.map(value => value + 15);
+const mergeTimes = (...groups) => [...new Set(groups.flat())].sort((a, b) => a - b);
+
+// During fall operation, the former Kennebecasis Island runs become extra
+// Summerville-Millidgeville runs at the same departure times.
+const FORMER_ISLAND_FROM_SUMMERVILLE = {
+  weekday: [330,600,720,900,1080,1200,1320],
+  saturday: [510,600,720,900,1080,1200,1320],
+  sunday: [600,720,900,1080,1200,1320]
+};
+
+const FALL_S2M = {
+  weekday: mergeTimes(REGULAR_S2M.weekday, FORMER_ISLAND_FROM_SUMMERVILLE.weekday),
+  saturday: mergeTimes(REGULAR_S2M.saturday, FORMER_ISLAND_FROM_SUMMERVILLE.saturday),
+  sunday: mergeTimes(REGULAR_S2M.sunday, FORMER_ISLAND_FROM_SUMMERVILLE.sunday)
+};
 
 export const SCHEDULES = Object.freeze({
   s2m: Object.freeze({
-    weekday: Object.freeze(S2M.weekday),
-    saturday: Object.freeze(S2M.saturday),
-    sunday: Object.freeze(S2M.sunday)
+    weekday: Object.freeze(FALL_S2M.weekday),
+    saturday: Object.freeze(FALL_S2M.saturday),
+    sunday: Object.freeze(FALL_S2M.sunday)
   }),
   m2s: Object.freeze({
-    weekday: Object.freeze(plus15(S2M.weekday)),
-    saturday: Object.freeze(plus15(S2M.saturday)),
-    sunday: Object.freeze(plus15(S2M.sunday))
+    weekday: Object.freeze(mergeTimes(plus15(REGULAR_S2M.weekday), plus15(FORMER_ISLAND_FROM_SUMMERVILLE.weekday))),
+    saturday: Object.freeze(mergeTimes(plus15(REGULAR_S2M.saturday), plus15(FORMER_ISLAND_FROM_SUMMERVILLE.saturday))),
+    sunday: Object.freeze(mergeTimes(plus15(REGULAR_S2M.sunday), plus15(FORMER_ISLAND_FROM_SUMMERVILLE.sunday)))
   })
 });
 
