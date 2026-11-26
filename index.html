@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#063f58">
+  <meta name="description" content="GPS ferry countdown for the Peninsula Princess between Summerville and Millidgeville, New Brunswick.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ferry Timer">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Peninsula Princess Ferry Timer</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icons/ferry-mark.svg" alt="" width="46" height="46">
+        <div>
+          <p class="eyebrow">Peninsula Princess</p>
+          <h1>Ferry Timer</h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span id="networkBadge" class="network-badge">Online</span>
+        <button id="installBtn" class="icon-button" hidden aria-label="Install app" title="Install app">↓</button>
+        <button id="settingsBtn" class="icon-button" aria-label="Open settings" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="direction-card" aria-labelledby="directionHeading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Route</p>
+            <h2 id="directionHeading">Choose your departure side</h2>
+          </div>
+          <label class="auto-switch"><input id="autoDirection" type="checkbox" checked><span>Auto</span></label>
+        </div>
+        <div class="segmented" role="group" aria-label="Ferry direction">
+          <button id="s2mBtn" data-direction="s2m" class="direction-button active">
+            <span class="place">Summerville</span><span class="arrow">→</span><span>Millidgeville</span>
+          </button>
+          <button id="m2sBtn" data-direction="m2s" class="direction-button">
+            <span class="place">Millidgeville</span><span class="arrow">→</span><span>Summerville</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="statusCard" class="status-card neutral" aria-live="polite">
+        <div class="status-topline">
+          <span id="statusPill" class="status-pill">Ready</span>
+          <span id="lastUpdated">Waiting for location</span>
+        </div>
+        <p id="nextLabel" class="next-label">Next sailing</p>
+        <p id="departureTime" class="departure-time">--:--</p>
+        <p id="dayLabel" class="day-label">New Brunswick time</p>
+        <div class="slack-block">
+          <span id="slackPrefix">Tap Start to calculate</span>
+          <strong id="slackTime">--:--</strong>
+        </div>
+        <p id="statusMessage" class="status-message">Your position is used only to estimate the drive to the departure queue.</p>
+        <button id="startBtn" class="primary-button">Start GPS timer</button>
+      </section>
+
+      <section class="metrics" aria-label="Journey estimate">
+        <article>
+          <span>Drive ETA</span>
+          <strong id="etaValue">--</strong>
+          <small id="etaSource">Waiting for GPS</small>
+        </article>
+        <article>
+          <span>Road distance</span>
+          <strong id="distanceValue">--</strong>
+          <small id="accuracyValue">Accuracy --</small>
+        </article>
+        <article>
+          <span>Queue arrival</span>
+          <strong id="arrivalValue">--</strong>
+          <small id="bufferValue">1 min loading buffer</small>
+        </article>
+      </section>
+
+      <section class="sailings-card">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">After that</p><h2>Upcoming sailings</h2></div>
+          <span id="scheduleType" class="subtle-chip">Weekday</span>
+        </div>
+        <div id="sailingList" class="sailing-list"></div>
+      </section>
+
+      <section class="notice-card">
+        <strong>Before you set off</strong>
+        <p>This timer uses the supplied 8 July 2021 timetable. Weather, season, maintenance and queues can change the actual service.</p>
+        <div class="notice-links">
+          <a href="https://www.gnb.ca/en/topic/driving-transportation/bridges-ferries/ferries/peninsula-princess-schedule.html" target="_blank" rel="noopener">Official schedule ↗</a>
+          <a href="tel:511">Call 511</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>Keep your eyes on the road. The ferry will cope without being stared at.</footer>
+  </div>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="settings-panel">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Preferences</p><h2>Timer settings</h2></div>
+        <button class="icon-button" value="cancel" aria-label="Close settings">×</button>
+      </div>
+      <label>Loading buffer
+        <span><input id="bufferInput" type="range" min="0" max="15" step="1" value="1"><output id="bufferOutput">1 min</output></span>
+        <small>How early you want to reach the queue.</small>
+      </label>
+      <label>Fallback driving speed
+        <span><input id="speedInput" type="range" min="30" max="100" step="5" value="70"><output id="speedOutput">70 km/h</output></span>
+        <small>Used only if online road routing is unavailable.</small>
+      </label>
+      <label>Schedule mode
+        <select id="scheduleOverride">
+          <option value="auto">Automatic</option>
+          <option value="weekday">Weekday</option>
+          <option value="saturday">Saturday / statutory holiday</option>
+          <option value="sunday">Sunday</option>
+        </select>
+        <small>Automatic uses New Brunswick time and recognises core provincial public holidays.</small>
+      </label>
+      <label class="check-row"><input id="wakeLockInput" type="checkbox" checked><span>Keep the screen awake while timing</span></label>
+      <div class="privacy-note"><strong>Privacy</strong><p>Your GPS position stays in the app. When online road routing is used, coordinates are sent to the public OSRM routing service.</p></div>
+      <button id="saveSettingsBtn" class="primary-button" value="default">Save settings</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

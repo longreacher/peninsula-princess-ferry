@@ -1,0 +1,20 @@
+{
+  "name": "Peninsula Princess Ferry Timer",
+  "short_name": "Ferry Timer",
+  "description": "GPS catchability timer for the Summerville–Millidgeville ferry.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf8f8",
+  "theme_color": "#063f58",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Leave Summerville", "short_name": "From Summerville", "url": "./?direction=s2m", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Leave Millidgeville", "short_name": "From Millidgeville", "url": "./?direction=m2s", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
