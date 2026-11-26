@@ -7,7 +7,7 @@ A Windows-friendly, installable web app for judging whether you can reach the ne
 1. Extract the ZIP.
 2. Double-click **START-WINDOWS.bat**.
 3. Edge or Chrome will open `http://localhost:8080`.
-4. Select **Start GPS timer** and allow location access.
+4. Allow location access when prompted. GPS starts automatically.
 5. In Edge or Chrome, use the install icon in the address bar to install it as an app.
 
 Keep the PowerShell window open while using this local copy. Opening `index.html` directly is not enough: browsers require `localhost` or HTTPS for GPS and PWA installation. If the included server is blocked, install Python and run `py -m http.server 8080` from this folder.
@@ -38,7 +38,8 @@ On iOS, keep the app visible while driving; continuous background GPS is restric
 - Automatically picks the nearer departure landing, with a manual direction override.
 - Uses New Brunswick time (`America/Moncton`) even if the device is set to another zone.
 - Detects core New Brunswick public holidays and uses the Saturday/holiday schedule; a manual schedule override is available.
-- Requests a fresh position and recalculates the display every five seconds.
+- Starts GPS automatically when the app opens, then requests a fresh position and recalculates the display every five seconds.
+- Shows **Start GPS timer** only as a fallback if automatic GPS startup fails.
 - Uses online road routing when available. If it cannot reach the router, it switches to a configurable straight-line fallback estimate.
 - Accounts for a configurable loading buffer (one minute by default).
 - Identifies the next sailing as on track or unlikely and suggests the next catchable sailing.

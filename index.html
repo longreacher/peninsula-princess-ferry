@@ -52,18 +52,18 @@
 
       <section id="statusCard" class="status-card neutral" aria-live="polite">
         <div class="status-topline">
-          <span id="statusPill" class="status-pill">Ready</span>
-          <span id="lastUpdated">Waiting for location</span>
+          <span id="statusPill" class="status-pill">Locating</span>
+          <span id="lastUpdated">Starting GPS</span>
         </div>
         <p id="nextLabel" class="next-label">Next sailing</p>
         <p id="departureTime" class="departure-time">--:--</p>
         <p id="dayLabel" class="day-label">New Brunswick time</p>
         <div class="slack-block">
-          <span id="slackPrefix">Tap Start to calculate</span>
+          <span id="slackPrefix">Starting GPS automatically</span>
           <strong id="slackTime">--:--</strong>
         </div>
-        <p id="statusMessage" class="status-message">Your position is used only to estimate the drive to the departure queue.</p>
-        <button id="startBtn" class="primary-button">Start GPS timer</button>
+        <p id="statusMessage" class="status-message">Allow location access when prompted. Your position is used only to estimate the drive to the departure queue.</p>
+        <button id="startBtn" class="primary-button" hidden>Start GPS timer</button>
       </section>
 
       <section class="metrics" aria-label="Journey estimate">

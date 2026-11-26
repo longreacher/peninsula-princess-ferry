@@ -121,24 +121,28 @@ function positionSuccess(position) {
   state.started = true;
   state.position = { lat: position.coords.latitude, lon: position.coords.longitude, accuracy: position.coords.accuracy };
   if (state.autoDirection) setDirection(nearestDirection(state.position));
-  elements.startBtn.textContent = 'GPS timer running';
-  elements.startBtn.disabled = true;
+  elements.startBtn.hidden = true;
+  requestWakeLock();
   refreshRoute(false);
   render();
 }
 function positionError(error) {
   state.locating = false;
+  elements.startBtn.hidden = false;
   elements.startBtn.disabled = false;
   elements.startBtn.textContent = 'Try GPS again';
   const message = error.code === 1 ? 'Location permission was denied. Enable it in browser settings, then try again.' : 'Your location could not be read. Check Windows Location Services and try again.';
+  render();
   elements.statusMessage.textContent = message;
   toast(message);
 }
 function requestPosition() {
   if (!navigator.geolocation) return positionError({ code: 0 });
   state.locating = true;
+  elements.startBtn.hidden = true;
   elements.startBtn.disabled = true;
   elements.startBtn.textContent = 'Finding location…';
+  render();
   navigator.geolocation.getCurrentPosition(positionSuccess, positionError, { enableHighAccuracy: true, timeout: 12000, maximumAge: 4000 });
 }
 async function requestWakeLock() {
@@ -166,7 +170,7 @@ function render() {
   elements.dayLabel.textContent = next ? `${dayFmt.format(next.departure)} · ${DIRECTIONS[state.direction].origin} departure` : 'New Brunswick time';
   elements.scheduleType.textContent = next ? scheduleTypeLabel(next.type, next.holiday) : 'Schedule';
   elements.bufferValue.textContent = `${state.bufferMinutes} min loading buffer`;
-  elements.lastUpdated.textContent = state.started ? `Updated ${secondFmt.format(now)}` : 'Waiting for location';
+  elements.lastUpdated.textContent = state.started ? `Updated ${secondFmt.format(now)}` : state.locating ? 'Starting GPS' : 'Waiting for location';
 
   const route = state.routing;
   if (state.position && route) {
@@ -183,8 +187,10 @@ function render() {
   elements.statusCard.className = 'status-card neutral';
   if (!state.position || !route) {
     elements.statusPill.textContent = state.locating ? 'Locating' : 'Ready';
-    elements.slackPrefix.textContent = 'Tap Start to calculate'; elements.slackTime.textContent = '--:--';
-    elements.statusMessage.textContent = `The next ${DIRECTIONS[state.direction].origin} sailing is shown. GPS will calculate whether you can reach its queue in time.`;
+    elements.slackPrefix.textContent = state.locating ? 'Starting GPS automatically' : 'GPS unavailable'; elements.slackTime.textContent = '--:--';
+    elements.statusMessage.textContent = state.locating
+      ? `Allow location access when prompted. The next ${DIRECTIONS[state.direction].origin} sailing is shown.`
+      : `The next ${DIRECTIONS[state.direction].origin} sailing is shown. Use the GPS button below to try again.`;
   } else if (status.slackSeconds >= 0) {
     elements.statusCard.className = 'status-card good';
     elements.statusPill.textContent = 'On track'; elements.slackPrefix.textContent = 'Ahead by'; elements.slackTime.textContent = formatDuration(status.slackSeconds);
@@ -243,5 +249,5 @@ elements.installBtn.addEventListener('click', async () => { if (!state.installPr
 window.addEventListener('appinstalled', () => toast('Ferry Timer installed'));
 
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-setOnlineState(); setDirection(state.direction); render();
+setOnlineState(); setDirection(state.direction); render(); requestPosition();
 state.timer = setInterval(() => { if (state.started && !state.locating) requestPosition(); render(); }, 5000);
