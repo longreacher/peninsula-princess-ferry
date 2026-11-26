@@ -30,7 +30,8 @@ const state = {
   wakeLock: null,
   installPrompt: null,
   timer: null,
-  routeInFlight: false
+  routeInFlight: false,
+  locationRequestId: 0
 };
 
 const timeFmt = new Intl.DateTimeFormat('en-CA', { timeZone: ZONE, hour: 'numeric', minute: '2-digit' });
@@ -121,16 +122,16 @@ function positionSuccess(position) {
   state.started = true;
   state.position = { lat: position.coords.latitude, lon: position.coords.longitude, accuracy: position.coords.accuracy };
   if (state.autoDirection) setDirection(nearestDirection(state.position));
-  elements.startBtn.hidden = true;
+  elements.startBtn.disabled = false;
+  elements.startBtn.textContent = 'Start GPS timer';
   requestWakeLock();
   refreshRoute(false);
   render();
 }
 function positionError(error) {
   state.locating = false;
-  elements.startBtn.hidden = false;
   elements.startBtn.disabled = false;
-  elements.startBtn.textContent = 'Try GPS again';
+  elements.startBtn.textContent = 'Start GPS timer';
   const message = error.code === 1 ? 'Location permission was denied. Enable it in browser settings, then try again.' : 'Your location could not be read. Check Windows Location Services and try again.';
   render();
   elements.statusMessage.textContent = message;
@@ -138,12 +139,19 @@ function positionError(error) {
 }
 function requestPosition() {
   if (!navigator.geolocation) return positionError({ code: 0 });
+  const requestId = ++state.locationRequestId;
   state.locating = true;
-  elements.startBtn.hidden = true;
-  elements.startBtn.disabled = true;
-  elements.startBtn.textContent = 'Finding location…';
+  elements.startBtn.disabled = false;
+  elements.startBtn.textContent = 'Start GPS timer';
   render();
-  navigator.geolocation.getCurrentPosition(positionSuccess, positionError, { enableHighAccuracy: true, timeout: 12000, maximumAge: 4000 });
+  navigator.geolocation.getCurrentPosition(
+    position => { if (requestId === state.locationRequestId) positionSuccess(position); },
+    error => { if (requestId === state.locationRequestId) positionError(error); },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 4000 }
+  );
+}
+function attemptAutomaticGps() {
+  if (!state.started && !state.locating) requestPosition();
 }
 async function requestWakeLock() {
   if (!state.wakeLockEnabled || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
@@ -243,11 +251,18 @@ $('#saveSettingsBtn').addEventListener('click', () => {
   saveSettings(); render(); if (state.position) refreshRoute(true); requestWakeLock(); toast('Settings saved');
 });
 window.addEventListener('online', setOnlineState); window.addEventListener('offline', setOnlineState);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && state.started) { requestWakeLock(); requestPosition(); } });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (state.started) { requestWakeLock(); requestPosition(); }
+  else attemptAutomaticGps();
+});
+window.addEventListener('pageshow', attemptAutomaticGps);
 window.addEventListener('beforeinstallprompt', event => { event.preventDefault(); state.installPrompt = event; elements.installBtn.hidden = false; });
 elements.installBtn.addEventListener('click', async () => { if (!state.installPrompt) return; state.installPrompt.prompt(); await state.installPrompt.userChoice; state.installPrompt = null; elements.installBtn.hidden = true; });
 window.addEventListener('appinstalled', () => toast('Ferry Timer installed'));
 
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-setOnlineState(); setDirection(state.direction); render(); requestPosition();
+setOnlineState(); setDirection(state.direction); render();
+if (document.readyState === 'complete') attemptAutomaticGps();
+else window.addEventListener('load', attemptAutomaticGps, { once: true });
 state.timer = setInterval(() => { if (state.started && !state.locating) requestPosition(); render(); }, 5000);

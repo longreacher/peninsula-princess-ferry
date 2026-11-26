@@ -1,4 +1,4 @@
-const CACHE = 'ferry-timer-v1.0.2';
+const CACHE = 'ferry-timer-v1.0.3';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './schedule.mjs', './manifest.webmanifest',
   './icons/ferry-mark.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
