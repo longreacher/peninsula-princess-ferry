@@ -44,6 +44,7 @@ On iOS, keep the app visible while driving; continuous background GPS is restric
 - Uses online road routing when available. If it cannot reach the router, it switches to a configurable straight-line fallback estimate.
 - Accounts for a configurable loading buffer (one minute by default).
 - Identifies the next sailing as on track or unlikely and suggests the next catchable sailing.
+- Changes the late status to **Ain't gonna happen** only when the target ferry is more than five minutes out of reach; margins up to and including five minutes late remain **Unlikely**.
 - Caches the app shell for offline use.
 - Requests a screen wake lock where the browser supports it.
 
@@ -66,6 +67,7 @@ Location stays in the browser. For online road routing, the current coordinates 
 - `styles.css` — responsive visual design
 - `app.js` — GPS, routing, countdown and settings
 - `schedule.mjs` — timetable, holiday and timezone logic
+- `status.mjs` — late-status threshold logic
 - `manifest.webmanifest` — install metadata
 - `sw.js` — offline cache
 - `START-WINDOWS.bat` / `start-windows.ps1` — no-build Windows launcher

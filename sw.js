@@ -1,6 +1,6 @@
-const CACHE = 'ferry-timer-v1.0.4';
+const CACHE = 'ferry-timer-v1.0.5';
 const SHELL = [
-  './', './index.html', './styles.css', './app.js', './schedule.mjs', './manifest.webmanifest',
+  './', './index.html', './styles.css', './app.js', './schedule.mjs', './status.mjs', './manifest.webmanifest',
   './icons/ferry-mark.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', event => {

@@ -1,4 +1,5 @@
 import { DIRECTIONS, ZONE, haversineKm, nearestDirection, upcomingSailings } from './schedule.mjs';
+import { lateStatusLabel } from './status.mjs';
 
 const $ = selector => document.querySelector(selector);
 const elements = {
@@ -205,7 +206,7 @@ function render() {
     elements.statusMessage.textContent = `Estimated queue arrival ${timeFmt.format(status.arrival)}, including your ${state.bufferMinutes}-minute loading buffer.`;
   } else {
     elements.statusCard.className = 'status-card bad';
-    elements.statusPill.textContent = 'Unlikely'; elements.slackPrefix.textContent = 'Behind by'; elements.slackTime.textContent = formatDuration(-status.slackSeconds);
+    elements.statusPill.textContent = lateStatusLabel(status.slackSeconds); elements.slackPrefix.textContent = 'Behind by'; elements.slackTime.textContent = formatDuration(-status.slackSeconds);
     if (status.catchable) {
       elements.statusMessage.textContent = `The next sailing looks tight. Aim for ${timeFmt.format(status.catchable.sailing.departure)}; you are ${formatDuration(status.catchable.slack)} ahead for that one.`;
     } else {
