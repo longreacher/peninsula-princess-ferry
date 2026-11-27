@@ -30,6 +30,19 @@ Sign in at `https://app.netlify.com/drop`, drag this extracted folder onto the p
 
 On iOS, keep the app visible while driving; continuous background GPS is restricted for web apps.
 
+## Enable privacy-friendly usage analytics
+
+The PWA includes an optional GoatCounter integration for aggregate visits/page views and approximate unique visitors. It is deliberately inactive until you supply your own dashboard endpoint; this avoids sending data to an account you do not control.
+
+1. Create a free hosted site at `https://www.goatcounter.com/signup` and note your site code.
+2. On Windows, double-click **CONFIGURE-ANALYTICS.bat** and enter that code.
+3. Redeploy the project files to GitHub Pages.
+4. View the results at `https://YOUR-SITE-CODE.goatcounter.com`.
+
+Alternatively, edit `analytics-config.js` and set `endpoint` to `https://YOUR-SITE-CODE.goatcounter.com/count`.
+
+Analytics sends only one fixed page name and title. It does not read or send GPS coordinates, route details, precise location, URL parameters, referrers, names, email addresses, or persistent identifiers. It is disabled on `localhost`, other non-HTTPS pages, and when Global Privacy Control or browser Do Not Track is enabled. GoatCounter uses no cookies and estimates visits without persistently storing IP addresses or user-agent strings. Leave the endpoint empty to disable analytics entirely.
+
 ## What the app does
 
 - Includes only **Summerville → Millidgeville** and **Millidgeville → Summerville**.
@@ -47,6 +60,7 @@ On iOS, keep the app visible while driving; continuous background GPS is restric
 - Changes the late status to **Ain't gonna happen** only when the target ferry is more than five minutes out of reach; margins up to and including five minutes late remain **Unlikely**.
 - Caches the app shell for offline use.
 - Requests a screen wake lock where the browser supports it.
+- Supports optional cookie-free aggregate usage analytics for a public GitHub Pages deployment.
 
 ## Important accuracy notes
 
@@ -68,6 +82,9 @@ Location stays in the browser. For online road routing, the current coordinates 
 - `app.js` — GPS, routing, countdown and settings
 - `schedule.mjs` — timetable, holiday and timezone logic
 - `status.mjs` — late-status threshold logic
+- `analytics.js` — privacy-restricted analytics loader
+- `analytics-config.js` — user-owned analytics endpoint configuration
+- `CONFIGURE-ANALYTICS.bat` / `.ps1` — Windows analytics setup helper
 - `manifest.webmanifest` — install metadata
 - `sw.js` — offline cache
 - `START-WINDOWS.bat` / `start-windows.ps1` — no-build Windows launcher

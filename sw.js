@@ -1,6 +1,6 @@
-const CACHE = 'ferry-timer-v1.0.5';
+const CACHE = 'ferry-timer-v1.1.0';
 const SHELL = [
-  './', './index.html', './styles.css', './app.js', './schedule.mjs', './status.mjs', './manifest.webmanifest',
+  './', './index.html', './styles.css', './app.js', './schedule.mjs', './status.mjs', './analytics.js', './analytics-config.js', './manifest.webmanifest',
   './icons/ferry-mark.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install', event => {
@@ -13,6 +13,13 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
+  if (url.pathname.endsWith('/analytics-config.js')) {
+    event.respondWith(fetch(event.request).then(response => {
+      if (response.ok) { const copy = response.clone(); caches.open(CACHE).then(cache => cache.put(event.request, copy)); }
+      return response;
+    }).catch(() => caches.match(event.request)));
+    return;
+  }
   if (event.request.mode === 'navigate') {
     event.respondWith(fetch(event.request).then(response => {
       const copy = response.clone(); caches.open(CACHE).then(cache => cache.put('./index.html', copy)); return response;
